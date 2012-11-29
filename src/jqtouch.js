@@ -63,6 +63,14 @@
                 debug: true,
                 defaultAnimation: 'slideleft',
                 fixedViewport: true,
+                viewportConfig: {
+                    width: false,
+                    height: false,
+                    allowScale: false,
+                    initialScale: "1.0",
+                    minimumScale: false,
+                    maximumScale: "1.0"
+                },
                 formSelector: 'form',
                 fullScreen: true,
                 fullScreenClass: 'fullscreen',
@@ -365,6 +373,39 @@
                 }
             }
         }
+        function getViewportContent() {
+            var props = [],
+                viewportConfig = jQTSettings.viewportConfig,
+                userScalable = viewportConfig.allowScale,
+                content = '';
+
+            if (viewportConfig.width) {
+                props.push("width=" + viewportConfig.width)
+            }
+            if (viewportConfig.height) {
+                props.push("height=" + viewportConfig.height)
+            }
+            if (viewportConfig.initialScale) {
+                props.push("initial-scale=" + viewportConfig.initialScale);
+            }
+            if (viewportConfig.minimumScale) {
+                props.push("minimum-scale=" + viewportConfig.minimumScale);
+            }
+            if (viewportConfig.maximumScale) {
+                props.push("maximum-scale=" + viewportConfig.maximumScale);
+            }
+
+            if (typeof userScalable === 'boolean')
+                userScalable = userScalable ? 1 : 0;
+
+            props.push("user-scalable=" + userScalable);
+
+            $.each(props, function (index) {
+                content += index ? ", " + this : this;
+            });
+
+            return content;
+        }
         function init(options) {
             jQTSettings = $.extend({}, defaults, options);
 
@@ -390,7 +431,7 @@
 
             // Set viewport
             if (jQTSettings.fixedViewport) {
-                hairExtensions += '<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>';
+                hairExtensions += '<meta name="viewport" content="' + getViewportContent() + '"/>';
             }
 
             // Set full-screen
